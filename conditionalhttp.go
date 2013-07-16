@@ -44,6 +44,8 @@ func hasChangedSince(url string, lastModified time.Time) (bool, time.Time, error
 		return false, time.Time{}, fmt.Errorf("HEAD request failed (%s)", err)
 	}
 
+	defer res.Body.Close()
+
 	if res.StatusCode != 200 {
 		return false, time.Time{}, fmt.Errorf("HEAD request response %d", res.StatusCode)
 	}
