@@ -23,6 +23,10 @@ func ConditionalGet(url string, lastModified time.Time) (bool, Response, error) 
 
 		defer res.Body.Close()
 
+		if res.StatusCode != 200 {
+			return false, Response{}, fmt.Errorf("GET request response %d", res.StatusCode)
+		}
+
 		buff, err := ioutil.ReadAll(res.Body)
 		if err != nil {
 			return false, Response{}, err
@@ -38,6 +42,10 @@ func hasChangedSince(url string, lastModified time.Time) (bool, time.Time, error
 	res, err := http.Head(url)
 	if err != nil {
 		return false, time.Time{}, fmt.Errorf("HEAD request failed (%s)", err)
+	}
+
+	if res.StatusCode != 200 {
+		return false, time.Time{}, fmt.Errorf("HEAD request response %d", res.StatusCode)
 	}
 
 	header := res.Header.Get("Last-Modified")
